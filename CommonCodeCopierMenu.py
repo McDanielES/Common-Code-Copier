@@ -9,7 +9,7 @@ import pyperclip
 def draw_window(screen):
   # Initialize size, borders and color schema
   box_width        = 40
-  box_height       = 10
+  box_height       = 8
   input_box_height = 4
   
   curses.start_color()
@@ -76,35 +76,36 @@ def draw_window(screen):
     row = row + 1
     
   # Draw User selection box
-  input_box = curses.newwin(input_box_height, box_width - 2, box_height - input_box_height + 2, 2)
+  input_box = curses.newwin(input_box_height, box_width - 2, box_height - input_box_height + 4, 2)
   input_box.box()
   input_box.refresh()
-  screen.addstr(box_height - input_box_height + 4, start_x_customSelection, customSelection, curses.color_pair(3))
-  screen.addstr(box_height - input_box_height + 3, start_x_enterSelection, enterSelection, curses.color_pair(2))
+  screen.addstr(box_height - input_box_height + 6, start_x_customSelection, customSelection, curses.color_pair(3))
+  screen.addstr(box_height - input_box_height + 5, start_x_enterSelection, enterSelection, curses.color_pair(2))
   
   # Throw an exception if user input is improper
   selection = screen.getch()
-  while (int(selection) != -1):
-    if (selection == 102):
-      selection = customizeClipboard(screen, Code, box_height, box_width, input_box_height)
-    elif (selection < 48 or selection > 48 + len(Code)):
-      raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
-    box1.refresh()
-    input_box.refresh()
+
+  if (selection == 102):
+    customizeClipboard(screen, Code)
+  elif (selection < 48 or selection > 48 + len(Code)):
+    raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
 
   # Ascii value conversion of char 1 to decimal 1
   selection = selection - 49
 
   # 10 matches keyboard value of enter key, only save to clipboard when confirmed
   enterButtonPressed = screen.getch()
-  screen.addstr(10,10,"enterButtonPressed: {}".format(enterButtonPressed))
   if (enterButtonPressed == 10):
     pyperclip.copy(Code[int(selection)])
   
-  screen.getch()
+  # screen.getch()
 
-def customizeClipboard(screen, Code, box_height, box_width, input_box_height):
-  box1 = curses.newwin(box_height, box_width, 3, 1)
+def customizeClipboard(screen, Code):
+  box_width        = 40
+  box_height       = 25
+  input_box_height = 4
+  
+  box1 = curses.newwin(box_height, box_width, 1, 1)
   box1.box()
   screen.refresh()
   box1.refresh()
@@ -116,36 +117,65 @@ def customizeClipboard(screen, Code, box_height, box_width, input_box_height):
   
   # Prints the horizontal bar across the top below the instructions
   for x in range(2, box_width):
-    screen.addch(5, x, curses.ACS_HLINE)
-  screen.addstr(6, 3, "1. Add a custom line of code")
-  screen.addstr(7, 3, "2. Remove a custom line of code")
+    screen.addch(3, x, curses.ACS_HLINE)
+  screen.addstr(4, 3, "1. Add a custom line of code")
+  screen.addstr(5, 3, "2. Remove a custom line of code")
+  screen.addstr(6, 3, "3. Get help and instructions")
   
-  instructionsTop    = "What would you like to do?"[:box_width-1]
-  enterSelection     = "Enter Selection: "[:box_width-1]
-  customSelection    = "Or type \"r\" to return to main menu"[:box_width-1]
+  instructionsTop  = "What would you like to do?"[:box_width-1]
+  enterSelection   = "Enter Selection: "[:box_width-1]
+  explainSelection = "Instructions will print"[:box_width-1]
 
   # Define x starting position for flexible window creation
   start_x_instructionsTop    = int((box_width // 2) - (len(instructionsTop) // 2) - len(instructionsTop) % 2) + 2
   start_x_enterSelection     = int((box_width // 3) - (len(enterSelection) // 2) - len(enterSelection) % 2) + 2
-  start_x_customSelection    = int((box_width // 2) - (len(customSelection) // 2) - len(customSelection) % 2) + 1
-  screen.addstr(4, start_x_instructionsTop, instructionsTop, curses.color_pair(3))
-  screen.addstr(box_height - input_box_height + 4, start_x_customSelection, customSelection, curses.color_pair(3))
+  start_x_customSelection    = int((box_width // 2) - (len(explainSelection) // 2) - len(explainSelection) % 2) + 1
+  screen.addstr(2, start_x_instructionsTop, instructionsTop, curses.color_pair(2))
+  screen.addstr(box_height - input_box_height + 4, start_x_customSelection, explainSelection, curses.color_pair(3))
   screen.addstr(box_height - input_box_height + 3, start_x_enterSelection, enterSelection, curses.color_pair(2))
   
+  addingCustomCode   = "Adding Custom Code"[:box_width-1]
+  removingCustomCode = "Removing Custom Code"[:box_width-1]
+  instructions = "Instructions"[:box_width-1]
+  start_x_addingCustomCode   = int((box_width // 2) - (len(addingCustomCode) // 2) - len(addingCustomCode) % 2) + 2
+  start_x_removingCustomCode = int((box_width // 2) - (len(removingCustomCode) // 2) - len(removingCustomCode) % 2) + 2
+  start_x_instructions  = int((box_width // 2) - (len(instructions) // 2) - len(instructions) % 2) + 1
+  
   selection = screen.getch()
-  # screen.addstr(10,10,"selection: {}".format(int(selection)))
-  # screen.addstr(10,10,"selection: {}".format(selection))
-  if (selection == int(114)):
-    return -1
-  elif (int(selection) < 49 or int(selection) > 50):
+  for x in range(5):
+    screen.addstr(4 + x, 3, "                                    ")
+  if (int(selection) == 49):
+    screen.addstr(5, start_x_addingCustomCode, addingCustomCode, curses.color_pair(3))
+    screen.addstr(7, 3, "You can add custom lines of code to", curses.color_pair(2))
+    screen.addstr(8, 3, "this program by nagivating to the", curses.color_pair(2))
+    screen.addstr(9, 3, "directory where this script is saved.", curses.color_pair(2))
+    screen.addstr(10, 3, "Included in that directory is a text", curses.color_pair(2))
+    screen.addstr(11, 3, "file titled", curses.color_pair(2))
+    screen.addstr(11, 15, "code-options.txt", curses.color_pair(3))
+    screen.addstr(11, 32, "which", curses.color_pair(2))
+    screen.addstr(12, 3, "stores all of the data rendered here.", curses.color_pair(2))
+    screen.addstr(14, 3, "BEWARE!", curses.color_pair(1))
+    screen.addstr(14, 11, "One of the first things this", curses.color_pair(2))
+    screen.addstr(15, 3, "application does is check the size of", curses.color_pair(2))
+    screen.addstr(16, 3, "the window before rendering any text.", curses.color_pair(2))
+    screen.addstr(17, 3, "If there are more lines of code in", curses.color_pair(2))
+    screen.addstr(18, 3, "that text file that can fit in this", curses.color_pair(2))
+    screen.addstr(19, 3, "window, then this program will fail", curses.color_pair(2))
+    screen.addstr(20, 3, "safely. Either grow your window or", curses.color_pair(2))
+    screen.addstr(21, 3, "remove lines from the file.", curses.color_pair(2))
+  elif (int(selection) == 50):
+    screen.addstr(5, start_x_removingCustomCode, removingCustomCode, curses.color_pair(3))
+    screen.addstr(7, 3, "The process to remove", curses.color_pair(2))
+  elif (int(selection) < 49 or int(selection) > 51):
     raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
+  
+  screen.addstr(box_height, 3, "                                    ")
+  screen.addstr(box_height - 1, 3, "        Press any key to exit       ", curses.color_pair(1))
 
-  # Ascii value conversion of char 1 to decimal 1
-  selection = selection - 49
-  
-  
-  
-  # screen.getch()
+
+
+  screen.getch()
+  sys.exit(0)
 
   
 
@@ -181,7 +211,7 @@ if __name__ == '__main__':
     main()
   except KeyboardInterrupt:
     sys.exit(1)
-  # except ValueError:
-  #   sys.exit(2)
+  except ValueError:
+    sys.exit(2)
   except IOError:
     sys.exit(3)
