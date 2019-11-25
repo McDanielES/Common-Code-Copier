@@ -82,34 +82,70 @@ def draw_window(screen):
   screen.addstr(box_height - input_box_height + 4, start_x_customSelection, customSelection, curses.color_pair(3))
   screen.addstr(box_height - input_box_height + 3, start_x_enterSelection, enterSelection, curses.color_pair(2))
   
-
-
   # Throw an exception if user input is improper
   selection = screen.getch()
-  if (selection == 102):
-    customizeClipboard(screen, Code, box_height, box_width)
-  elif (selection < 48 or selection > 48 + len(Code)):
-    raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
+  while (int(selection) != -1):
+    if (selection == 102):
+      selection = customizeClipboard(screen, Code, box_height, box_width, input_box_height)
+    elif (selection < 48 or selection > 48 + len(Code)):
+      raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
+    box1.refresh()
+    input_box.refresh()
 
   # Ascii value conversion of char 1 to decimal 1
   selection = selection - 49
 
   # 10 matches keyboard value of enter key, only save to clipboard when confirmed
-  enterButtonPressed = screen.getch()  
+  enterButtonPressed = screen.getch()
+  screen.addstr(10,10,"enterButtonPressed: {}".format(enterButtonPressed))
   if (enterButtonPressed == 10):
     pyperclip.copy(Code[int(selection)])
   
   screen.getch()
 
-def customizeClipboard(screen, Code, box_height, box_width):
+def customizeClipboard(screen, Code, box_height, box_width, input_box_height):
   box1 = curses.newwin(box_height, box_width, 3, 1)
   box1.box()
   screen.refresh()
   box1.refresh()
   
+  # Draw User selection box
+  input_box = curses.newwin(input_box_height, box_width - 2, box_height - input_box_height + 2, 2)
+  input_box.box()
+  input_box.refresh()
+  
+  # Prints the horizontal bar across the top below the instructions
+  for x in range(2, box_width):
+    screen.addch(5, x, curses.ACS_HLINE)
+  screen.addstr(6, 3, "1. Add a custom line of code")
+  screen.addstr(7, 3, "2. Remove a custom line of code")
+  
+  instructionsTop    = "What would you like to do?"[:box_width-1]
+  enterSelection     = "Enter Selection: "[:box_width-1]
+  customSelection    = "Or type \"r\" to return to main menu"[:box_width-1]
+
+  # Define x starting position for flexible window creation
+  start_x_instructionsTop    = int((box_width // 2) - (len(instructionsTop) // 2) - len(instructionsTop) % 2) + 2
+  start_x_enterSelection     = int((box_width // 3) - (len(enterSelection) // 2) - len(enterSelection) % 2) + 2
+  start_x_customSelection    = int((box_width // 2) - (len(customSelection) // 2) - len(customSelection) % 2) + 1
+  screen.addstr(4, start_x_instructionsTop, instructionsTop, curses.color_pair(3))
+  screen.addstr(box_height - input_box_height + 4, start_x_customSelection, customSelection, curses.color_pair(3))
+  screen.addstr(box_height - input_box_height + 3, start_x_enterSelection, enterSelection, curses.color_pair(2))
+  
+  selection = screen.getch()
+  # screen.addstr(10,10,"selection: {}".format(int(selection)))
+  # screen.addstr(10,10,"selection: {}".format(selection))
+  if (selection == int(114)):
+    return -1
+  elif (int(selection) < 49 or int(selection) > 50):
+    raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
+
+  # Ascii value conversion of char 1 to decimal 1
+  selection = selection - 49
   
   
-  screen.getch()
+  
+  # screen.getch()
 
   
 
@@ -145,7 +181,7 @@ if __name__ == '__main__':
     main()
   except KeyboardInterrupt:
     sys.exit(1)
-  except ValueError:
-    sys.exit(2)
+  # except ValueError:
+  #   sys.exit(2)
   except IOError:
     sys.exit(3)
