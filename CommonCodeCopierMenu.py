@@ -16,8 +16,8 @@ def draw_window(screen):
   screen.border(0)
   winHeight, winWidth = screen.getmaxyx()
   curses.use_default_colors()
-  curses.init_pair(1, curses.COLOR_RED, -1)
-  curses.init_pair(2, curses.COLOR_CYAN, -1)
+  curses.init_pair(1, curses.COLOR_RED,   -1)
+  curses.init_pair(2, curses.COLOR_CYAN,  -1)
   curses.init_pair(3, curses.COLOR_GREEN, -1)
   
   # Declaration of strings
@@ -27,11 +27,11 @@ def draw_window(screen):
   instructionsTop    = "Please choose one option from"[:box_width-1]
   instructionsBottom = "the following selection"[:box_width-1]
   enterSelection     = "Enter Selection: "[:box_width-1]
-  customSelection    = "Or type \"f\" to customize selection"[:box_width-1]
+  customSelection    = "Or type \'f\' for additional help"[:box_width-1]
 
   # Define x starting position for flexible window creation
   start_x_intro              = int((box_width // 2) - (len(intro + title) // 2) - len(intro) % 2) + 1
-  start_x_title              = int((box_width // 2)  - len(title) % 2)
+  start_x_title              = int((box_width // 2) -  len(title) % 2)
   start_x_subtitle           = int((box_width // 2) - (len(subtitle) // 2) - len(subtitle) % 2) + 2
   start_x_instructionsTop    = int((box_width // 2) - (len(instructionsTop) // 2) - len(instructionsTop) % 2) + 2
   start_x_instructionsBottom = int((box_width // 2) - (len(instructionsBottom) // 2) - len(instructionsBottom) % 2) + 2
@@ -94,9 +94,9 @@ def draw_window(screen):
   selection = selection - 49
 
   # 10 matches keyboard value of enter key, only save to clipboard when confirmed
-  enterButtonPressed = screen.getch()
-  if (enterButtonPressed == 10):
-    pyperclip.copy(Code[int(selection)])
+  # enterButtonPressed = screen.getch()
+  # if (enterButtonPressed == 10):
+  pyperclip.copy(Code[int(selection)])
   
   # screen.getch()
 
@@ -142,6 +142,7 @@ def customizeClipboard(screen, Code):
   start_x_instructions  = int((box_width // 2) - (len(instructions) // 2) - len(instructions) % 2) + 1
   
   selection = screen.getch()
+  # Clear the options and Print all instructions
   for x in range(5):
     screen.addstr(4 + x, 3, "                                    ")
   if (int(selection) == 49):
@@ -165,20 +166,65 @@ def customizeClipboard(screen, Code):
     screen.addstr(21, 3, "remove lines from the file.", curses.color_pair(2))
   elif (int(selection) == 50):
     screen.addstr(5, start_x_removingCustomCode, removingCustomCode, curses.color_pair(3))
-    screen.addstr(7, 3, "The process to remove", curses.color_pair(2))
+    screen.addstr(7, 3, "The process to remove code from your", curses.color_pair(2))
+    screen.addstr(8, 3, "clipboard is similar to the process", curses.color_pair(2))
+    screen.addstr(9, 3, "of adding code. Navigate to the", curses.color_pair(2))
+    screen.addstr(10, 3, "local directory that contains this", curses.color_pair(2))
+    screen.addstr(11, 3, "script, and look for the file titled", curses.color_pair(2))
+    screen.addstr(12, 3, "code-options.txt", curses.color_pair(3))
+    screen.addstr(12, 19, " which contains all", curses.color_pair(2))
+    screen.addstr(13, 3, "of the custom code snippets saved", curses.color_pair(2))
+    screen.addstr(14, 3, "into memory.", curses.color_pair(2))
+    screen.addstr(16, 3, "Remove desired lines from file", curses.color_pair(2))
+    screen.addstr(17, 3, "avoiding gaps of space between lines.", curses.color_pair(2))
+  elif (int(selection) == 51):
+    screen.addstr(5, start_x_instructions, instructions, curses.color_pair(3))
+    screen.addstr(7, 3, "This application's goal intent is to", curses.color_pair(2))
+    screen.addstr(8, 3, "provide programmers (as well as", curses.color_pair(2))
+    screen.addstr(9, 3, "non-programmers) a tool to improve", curses.color_pair(2))
+    screen.addstr(10, 3, "their efficiency by providing an", curses.color_pair(2))
+    screen.addstr(11, 3, "application that copies some of the", curses.color_pair(2))
+    screen.addstr(12, 3, "most commonly typed syntax on to", curses.color_pair(2))
+    screen.addstr(13, 3, "their clipboards.", curses.color_pair(2))
+    screen.addstr(15, 3, "After having to write Java's infamous", curses.color_pair(2))
+    screen.addstr(16, 3, "System.out.println();", curses.color_pair(3))
+    screen.addstr(16, 24, " so many times", curses.color_pair(2))
+    screen.addstr(17, 3, "for an assignment, I wanted an app", curses.color_pair(2))
+    screen.addstr(18, 3, "that would make my time spent more", curses.color_pair(2))
+    screen.addstr(19, 3, "efficiently and was as resource", curses.color_pair(2))
+    screen.addstr(20, 3, "minimal as possible.", curses.color_pair(2))
+    screen.addstr(box_height, 3, "                                    ")
+    screen.addstr(box_height - 1, 3, "    Press any key for next page     ", curses.color_pair(3))
+    screen.getch()
+    for x in range(18):
+      screen.addstr(4 + x, 3, "                                     ")
+    instructions = "Instructions, continued"[:box_width-1]
+    start_x_instructions  = int((box_width // 2) - (len(instructions) // 2) - len(instructions) % 2) + 1
+    screen.addstr(5, start_x_instructions, instructions, curses.color_pair(3))
+    screen.addstr(7, 3, "Primarily intended for Linux, use the", curses.color_pair(2))
+    screen.addstr(8, 3, "accompanying bash shell script to", curses.color_pair(2))
+    screen.addstr(9, 3, "launch the python script. A separate", curses.color_pair(2))
+    screen.addstr(10, 3, "terminal window will open, which is", curses.color_pair(2))
+    screen.addstr(11, 3, "intentional. Configure your keyboard", curses.color_pair(2))
+    screen.addstr(12, 3, "layout with your window manager/ ", curses.color_pair(2))
+    screen.addstr(13, 3, "desktop environment to execute the", curses.color_pair(2))
+    screen.addstr(14, 3, "shell script, which opens the", curses.color_pair(2))
+    screen.addstr(15, 3, "terminal runs the python script.", curses.color_pair(2))
+    screen.addstr(17, 3, "When configured correctly, running", curses.color_pair(2))
+    screen.addstr(18, 3, "the program should take no more than", curses.color_pair(2))
+    screen.addstr(19, 3, "two keystrokes. The first to launch", curses.color_pair(2))
+    screen.addstr(20, 3, "the program, and the second as your", curses.color_pair(2))
+    screen.addstr(21, 3, "numerical selection of options.", curses.color_pair(2))
+    
   elif (int(selection) < 49 or int(selection) > 51):
     raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
   
   screen.addstr(box_height, 3, "                                    ")
   screen.addstr(box_height - 1, 3, "        Press any key to exit       ", curses.color_pair(1))
-
-
-
   screen.getch()
-  sys.exit(0)
+  sys.exit(0)  
 
-  
-
+# Returns the list of copy/pastable codes saved from the text file
 def readFile():
   clipboard = open("code-options.txt", "r")
   count = 1
@@ -189,6 +235,7 @@ def readFile():
   clipboard.close()
   return codeList
 
+# Helper method determines which is the widest line in the collection for rendering the window
 def countWidestLine(Code):
   countWidest = 0
   widest = 0
@@ -202,9 +249,8 @@ def countWidestLine(Code):
 
 def main():
   draw_window(curses.initscr())
-
-  from subprocess import call
-  call("exit 0", shell=True)
+  # from subprocess import call
+  # call("exit 0", shell=True)
 
 if __name__ == '__main__':
   try:
