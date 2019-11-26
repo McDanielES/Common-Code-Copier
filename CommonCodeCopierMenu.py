@@ -13,7 +13,6 @@ def draw_window(screen):
   input_box_height = 4
   
   curses.start_color()
-  screen.border(0)
   winHeight, winWidth = screen.getmaxyx()
   curses.use_default_colors()
   curses.init_pair(1, curses.COLOR_RED,   -1)
@@ -94,11 +93,8 @@ def draw_window(screen):
   selection = selection - 49
 
   # 10 matches keyboard value of enter key, only save to clipboard when confirmed
-  # enterButtonPressed = screen.getch()
-  # if (enterButtonPressed == 10):
   pyperclip.copy(Code[int(selection)])
-  
-  # screen.getch()
+
 
 def customizeClipboard(screen, Code):
   box_width        = 40
@@ -249,8 +245,6 @@ def countWidestLine(Code):
 
 def main():
   draw_window(curses.initscr())
-  # from subprocess import call
-  # call("exit 0", shell=True)
 
 if __name__ == '__main__':
   try:
