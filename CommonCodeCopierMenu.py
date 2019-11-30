@@ -3,9 +3,6 @@ import sys
 import curses
 import pyperclip
 
-# screen.move(50, 50)
-
-
 def draw_window(screen):
   # Initialize size, borders and color schema
   box_width        = 40
@@ -100,6 +97,11 @@ def customizeClipboard(screen, Code):
   box_width        = 40
   box_height       = 25
   input_box_height = 4
+  winHeight, winWidth = screen.getmaxyx()
+  if winHeight < box_height + 2:
+    raise IOError("Lines in input file exceeds number of lines vertically in window. You must grow window size.")
+  if winWidth < box_width + 2:
+    raise IOError("Lines in input file exceeds number of lines horizontally in window. You must grow window size.")
   
   box1 = curses.newwin(box_height, box_width, 1, 1)
   box1.box()
