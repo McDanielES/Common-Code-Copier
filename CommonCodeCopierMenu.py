@@ -90,7 +90,7 @@ def draw_window(screen):
   selection = selection - 49
 
   # 10 matches keyboard value of enter key, only save to clipboard when confirmed
-  pyperclip.copy(Code[int(selection)])
+  pyperclip.copy(Code[int(selection)].rstrip())
 
 
 def customizeClipboard(screen, Code):
