@@ -6,8 +6,8 @@ import pyperclip
 def draw_window(screen):
   # Initialize size, borders and color schema
   box_width        = 40
-  box_height       = 8
-  input_box_height = 4
+  box_height       = 9
+  input_box_height = 5
   
   curses.start_color()
   winHeight, winWidth = screen.getmaxyx()
@@ -15,31 +15,6 @@ def draw_window(screen):
   curses.init_pair(1, curses.COLOR_RED,   -1)
   curses.init_pair(2, curses.COLOR_CYAN,  -1)
   curses.init_pair(3, curses.COLOR_GREEN, -1)
-  
-  # Declaration of strings
-  intro              = "Welcome to the"[:box_width-1]
-  title              = "Common Code Copier"[:box_width-1]
-  subtitle           = "by Eric McDaniel, November 2019"[:box_width-1]
-  instructionsTop    = "Please choose one option from"[:box_width-1]
-  instructionsBottom = "the following selection"[:box_width-1]
-  enterSelection     = "Enter Selection: "[:box_width-1]
-  customSelection    = "Or type \'f\' for additional help"[:box_width-1]
-
-  # Define x starting position for flexible window creation
-  start_x_intro              = int((box_width // 2) - (len(intro + title) // 2) - len(intro) % 2) + 1
-  start_x_title              = int((box_width // 2) -  len(title) % 2)
-  start_x_subtitle           = int((box_width // 2) - (len(subtitle) // 2) - len(subtitle) % 2) + 2
-  start_x_instructionsTop    = int((box_width // 2) - (len(instructionsTop) // 2) - len(instructionsTop) % 2) + 2
-  start_x_instructionsBottom = int((box_width // 2) - (len(instructionsBottom) // 2) - len(instructionsBottom) % 2) + 2
-  start_x_enterSelection     = int((box_width // 3) - (len(enterSelection) // 2) - len(enterSelection) % 2) + 2
-  start_x_customSelection    = int((box_width // 2) - (len(customSelection) // 2) - len(customSelection) % 2) + 1
-  
-  # Render the text in appropriate location
-  screen.addstr(1, start_x_intro, intro)
-  screen.attron(curses.A_BOLD)
-  screen.addstr(1, start_x_title, title, curses.color_pair(1))
-  screen.attroff(curses.A_BOLD)
-  screen.addstr(2, start_x_subtitle, subtitle)
   
   # Read the textfile, make 
   Code = readFile()
@@ -53,6 +28,33 @@ def draw_window(screen):
     raise IOError("Lines in input file exceeds number of lines horizontally in window. Either grow window size or shrink file.")
   elif (widest > box_width - 5):
     box_width = widest + 5
+  
+  # Declaration of strings
+  intro              = "Welcome to the"[:box_width-1]
+  title              = "Common Code Copier"[:box_width-1]
+  subtitle           = "by Eric McDaniel, November 2019"[:box_width-1]
+  instructionsTop    = "Please choose one option from"[:box_width-1]
+  instructionsBottom = "the following selection"[:box_width-1]
+  enterSelection     = "Enter Selection: "[:box_width-1]
+  customSelection    = "Type \'f\' for additional help"[:box_width-1]
+  quitSelection      = "Or type \'q\' to quit"[:box_width-1]
+
+  # Define x starting position for flexible window creation
+  start_x_intro              = int((box_width // 2) - (len(intro + title) // 2) - len(intro) % 2) + 1
+  start_x_title              = int((box_width // 2) -  len(title) % 2)
+  start_x_subtitle           = int((box_width // 2) - (len(subtitle) // 2) - len(subtitle) % 2) + 2
+  start_x_instructionsTop    = int((box_width // 2) - (len(instructionsTop) // 2) - len(instructionsTop) % 2) + 2
+  start_x_instructionsBottom = int((box_width // 2) - (len(instructionsBottom) // 2) - len(instructionsBottom) % 2) + 2
+  start_x_enterSelection     = int((box_width // 2) - (len(enterSelection) // 2) - len(enterSelection) % 2) + 2
+  start_x_customSelection    = int((box_width // 2) - (len(customSelection) // 2) - len(customSelection) % 2) + 1
+  start_x_quitSelection      = int((box_width // 2) - (len(quitSelection) // 2) - len(quitSelection) % 2) + 1
+  
+  # Render the text in appropriate location
+  screen.addstr(1, start_x_intro, intro)
+  screen.attron(curses.A_BOLD)
+  screen.addstr(1, start_x_title, title, curses.color_pair(1))
+  screen.attroff(curses.A_BOLD)
+  screen.addstr(2, start_x_subtitle, subtitle)
 
   # Create main box and render centered instructions
   box1 = curses.newwin(box_height, box_width, 3, 1)
@@ -76,13 +78,17 @@ def draw_window(screen):
   input_box.box()
   input_box.refresh()
   screen.addstr(box_height - input_box_height + 6, start_x_customSelection, customSelection, curses.color_pair(3))
+  screen.addstr(box_height - input_box_height + 7, start_x_quitSelection, quitSelection, curses.color_pair(1))
   screen.addstr(box_height - input_box_height + 5, start_x_enterSelection, enterSelection, curses.color_pair(2))
   
-  # Throw an exception if user input is improper
   selection = screen.getch()
-
-  if (selection == 102):
+  # 113 = q, quit the application
+  if (selection == 113): 
+    sys.exit(0)
+  # 102 = f, additional help menu
+  elif (selection == 102):
     customizeClipboard(screen, Code)
+  # Throw an exception if user input is improper
   elif (selection < 48 or selection > 48 + len(Code)):
     raise ValueError("Expected an integer such as 1, 2, ... , but got invalid input.")
 
@@ -94,6 +100,7 @@ def draw_window(screen):
 
 
 def customizeClipboard(screen, Code):
+  screen.clear()
   box_width        = 40
   box_height       = 25
   input_box_height = 4
