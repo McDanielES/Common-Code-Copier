@@ -26,8 +26,8 @@ def draw_window(screen):
   widest = countWidestLine(Code)
   if (widest + 7 > winWidth): # The 7 includes all of the added borders around the edges.
     raise IOError("Lines in input file exceeds number of lines horizontally in window. Either grow window size or shrink file.")
-  elif (widest > box_width - 5):
-    box_width = widest + 5
+  elif (widest > box_width - 7):
+    box_width = widest + 7
   
   # Declaration of strings
   intro              = "Welcome to the"[:box_width-1]
